@@ -1,0 +1,7 @@
+[project]
+name = "masterblog-api"
+version = "1.0.0"
+description = "The blogging API for software developers."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
