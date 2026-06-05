@@ -37,13 +37,13 @@ def get_posts():
             POSTS.append(new_post)
             print("Added a new post. POSTS now has length", len(POSTS))
 
-            return jsonify(new_post)
+            return jsonify(new_post), 201
 
         except KeyError as e:
             return jsonify({ 'error': f'Required field {str(e)} not set.' }), 400
         
 
-    return jsonify(POSTS)
+    return jsonify(POSTS), 200
 
 
 if __name__ == '__main__':
