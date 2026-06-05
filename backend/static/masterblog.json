@@ -1,0 +1,175 @@
+{
+  "swagger": "2.0",
+
+  "info": {
+    "title": "Masterblog API",
+    "version": "1.0.0"
+  },
+  
+  "servers": [{ "url": "http://localhost:5001" }],
+  
+  "tags": [{ "name": "Post", "description": "Post API - CRUD"}],
+
+  "definitions": {
+    "PostCreateSchema": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "required": true
+        },
+        "content": {
+          "required": true
+        }
+      }
+    },
+    "PostUpdateSchema": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "required": false
+        },
+        "content": {
+          "required": false
+        }
+      }
+    }
+  },
+
+  "paths": {
+    "/api/posts/search": {
+      "get": {
+        "summary": "Searches by specified fields.",
+        "produces": ["application/json"],
+        "tags": ["Post"],
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "description": "Post title",
+            "required": false
+          },
+          {
+            "name": "content",
+            "in": "query",
+            "description": "Post content",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/api/posts": {
+      "get": {
+        "summary": "Returns all posts",
+        "produces": ["application/json"],
+        "tags": ["Post"],
+        "parameters": [
+          {
+            "name": "sort",
+            "in" : "query",
+            "description": "Field in Post to sort by",
+            "required": false
+          },
+          {
+            "name" : "direction",
+            "in" : "query",
+            "description": "Ascending or Descending order",
+            "enum": ["asc", "desc"],
+            "default": "asc",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      },
+      "post": {
+        "summary": "Creates a new post",
+        "produces": ["application/json"],
+        "tags": ["Post"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+                "ref": "#/definitions/CreatePostSchema"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful creation"
+          },
+          "400": {
+            "description": "Missing required fields in JSON body"
+          }
+        }
+      }
+    },
+    "/api/posts/{id}": {
+      "put" : {
+        "summary": "Updates a post",
+        "produces": ["application/json"],
+        "tags": ["Post"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Post ID to update",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "ref": "#/definitions/UpdatePostSchema"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful update"
+          },
+          "404": {
+            "description": "Post not found"
+          },
+          "400": {
+            "description": "Invalid id or JSON body"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletes a post",
+        "produces": ["application/json"],
+        "tags": ["Post"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Post ID to delete",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful deletion"
+          },
+          "404": {
+            "description": "Post not found"
+          },
+          "400": {
+            "description": "Invalid id parameter"
+          }
+        }
+      }
+    }
+  }
+}

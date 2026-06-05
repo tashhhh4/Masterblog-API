@@ -1,17 +1,37 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_swagger_ui import get_swaggerui_blueprint
+
+# App Settings
 
 app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
+
+SWAGGER_URL = '/api/docs'
+API_URL = '/static/masterblog.json'
+
+swagger_ui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': 'Masterblog API'
+    }
+)
+app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
+
+VALID_FIELDS = ['title', 'content']
+VALID_DIRECTIONS = ['asc', 'desc']
+
+
+# Placeholder Data
 
 POSTS = [
     {"id": 1, "title": "Fresh Start", "content": "Taking things one step at a time today. Progress, no matter how small, still counts."},
     {"id": 2, "title": "Quiet Wins", "content": "Not every achievement needs an audience. Some victories are best enjoyed in silence."},
 ]
 
-VALID_FIELDS = ['title', 'content']
-VALID_DIRECTIONS = ['asc', 'desc']
 
+# ID Helper
 
 def next_id(posts):
     """ Creates an unique id for a blog post. """
@@ -23,6 +43,8 @@ def next_id(posts):
             return new_id
         count += 1
 
+
+# Routes
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
@@ -70,9 +92,10 @@ def add_post():
 @app.route('/api/posts/<post_id>', methods=['DELETE'])
 def delete_post(post_id):
     global POSTS
-    post_id = int(post_id)
 
     try:
+        post_id = int(post_id)
+
         old_len = len(POSTS)
         POSTS = [p for p in POSTS if p["id"] != post_id]
         new_len = len(POSTS)
