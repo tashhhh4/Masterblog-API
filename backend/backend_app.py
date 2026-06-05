@@ -68,6 +68,38 @@ def delete_post(post_id):
         return jsonify({ 'error': 'Invalid post id.'}), 400
 
 
+@app.route('/api/posts/<post_id>', methods=['PUT'])
+def update_post(post_id):
+    try:
+        post_id = int(post_id)
+
+        post = [p for p in POSTS if p['id'] == post_id][0]
+
+        data = request.json
+
+        valid_fields = ['title', 'content']
+        at_least_one_valid_field = False
+
+        for key in data:
+            if key in valid_fields:
+                post[key] = data[key]
+                at_least_one_valid_field = True
+
+        if not at_least_one_valid_field:
+            raise TypeError
+            
+        return jsonify(post)
+
+    except TypeError:
+        return jsonify({ 'error': f'Expected at least one of valid fields: {valid_fields}' }), 400
+
+    except IndexError:
+        return jsonify({ 'error': 'Post not found.' }), 404
+
+    except ValueError:
+        return jsonify({ 'error': 'Invalid post id.' }), 400
+
+
 
 
 if __name__ == '__main__':
