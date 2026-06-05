@@ -21,29 +21,30 @@ def next_id(posts):
         count += 1
 
 
-@app.route('/api/posts', methods=['GET', 'POST'])
+@app.route('/api/posts', methods=['GET'])
 def get_posts():
-    if request.method == 'POST':
-        data = request.json
-        try:
-            title = data['title']
-            content = data['content']
-
-            new_post = {
-                "id": next_id(POSTS),
-                "title": title,
-                "content": content,
-            }
-            POSTS.append(new_post)
-            print("Added a new post. POSTS now has length", len(POSTS))
-
-            return jsonify(new_post), 201
-
-        except KeyError as e:
-            return jsonify({ 'error': f'Required field {str(e)} not set.' }), 400
-        
-
     return jsonify(POSTS), 200
+
+
+@app.route('/api/posts', methods=['POST'])
+def add_post():
+    data = request.json
+    try:
+        title = data['title']
+        content = data['content']
+
+        new_post = {
+            "id": next_id(POSTS),
+            "title": title,
+            "content": content,
+        }
+        POSTS.append(new_post)
+        print("Added a new post. POSTS now has length", len(POSTS))
+
+        return jsonify(new_post), 201
+
+    except KeyError as e:
+        return jsonify({ 'error': f'Required field {str(e)} not set.' }), 400
 
 
 if __name__ == '__main__':
