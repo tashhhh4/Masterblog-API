@@ -88,7 +88,7 @@ def update_post(post_id):
         if not at_least_one_valid_field:
             raise TypeError
             
-        return jsonify(post)
+        return jsonify(post), 200
 
     except TypeError:
         return jsonify({ 'error': f'Expected at least one of valid fields: {valid_fields}' }), 400
@@ -99,6 +99,20 @@ def update_post(post_id):
     except ValueError:
         return jsonify({ 'error': 'Invalid post id.' }), 400
 
+
+@app.route('/api/posts/search', methods=['GET'])
+def search_posts():
+    posts = POSTS
+    title = request.args.get('title')
+    content = request.args.get('content')
+
+    if title:
+        posts = [p for p in posts if title.lower() in p['title'].lower()]
+
+    if content:
+        posts = [p for p in posts if content.lower() in p['content'].lower()]
+
+    return jsonify(posts), 200
 
 
 
