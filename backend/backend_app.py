@@ -9,6 +9,8 @@ POSTS = [
     {"id": 2, "title": "Quiet Wins", "content": "Not every achievement needs an audience. Some victories are best enjoyed in silence."},
 ]
 
+VALID_FIELDS = ['title', 'content']
+
 
 def next_id(posts):
     """ Creates an unique id for a blog post. """
@@ -23,6 +25,8 @@ def next_id(posts):
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
+    sort = request.args.get('sort')
+    direction = request.args.get('direction')
     return jsonify(POSTS), 200
 
 
@@ -103,14 +107,12 @@ def update_post(post_id):
 @app.route('/api/posts/search', methods=['GET'])
 def search_posts():
     posts = POSTS
-    title = request.args.get('title')
-    content = request.args.get('content')
 
-    if title:
-        posts = [p for p in posts if title.lower() in p['title'].lower()]
+    for field in VALID_FIELDS:
+        field_value = request.args.get(field)
 
-    if content:
-        posts = [p for p in posts if content.lower() in p['content'].lower()]
+        if field_value:
+            posts = [p for p in posts if field_value.lower() in p[field].lower()]
 
     return jsonify(posts), 200
 
