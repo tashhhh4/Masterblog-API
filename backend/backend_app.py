@@ -10,6 +10,7 @@ POSTS = [
 ]
 
 VALID_FIELDS = ['title', 'content']
+VALID_DIRECTIONS = ['asc', 'desc']
 
 
 def next_id(posts):
@@ -25,9 +26,24 @@ def next_id(posts):
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
-    sort = request.args.get('sort')
+    posts = POSTS.copy()
+    reverse = False
     direction = request.args.get('direction')
-    return jsonify(POSTS), 200
+    if direction:
+        if direction not in VALID_DIRECTIONS:
+            return jsonify({ 'error': f'Invalid direction \'{direction}\'. Valid directions are: {VALID_DIRECTIONS}'})
+        reverse = direction == 'desc'
+    sort = request.args.get('sort')
+    
+    if sort:
+        if sort not in VALID_FIELDS:
+            return jsonify({ 'error': f'Invalid sort field \'{sort}\'.' }), 400
+        return jsonify(sorted(posts, key=lambda p: p[sort], reverse=reverse)), 200
+
+    else:
+        if reverse:
+            posts.reverse()
+        return jsonify(posts), 200
 
 
 @app.route('/api/posts', methods=['POST'])
@@ -81,11 +97,10 @@ def update_post(post_id):
 
         data = request.json
 
-        valid_fields = ['title', 'content']
         at_least_one_valid_field = False
 
         for key in data:
-            if key in valid_fields:
+            if key in VALID_FIELDS:
                 post[key] = data[key]
                 at_least_one_valid_field = True
 
@@ -95,7 +110,7 @@ def update_post(post_id):
         return jsonify(post), 200
 
     except TypeError:
-        return jsonify({ 'error': f'Expected at least one of valid fields: {valid_fields}' }), 400
+        return jsonify({ 'error': f'Expected at least one of valid fields: {VALID_FIELDS}' }), 400
 
     except IndexError:
         return jsonify({ 'error': 'Post not found.' }), 404
