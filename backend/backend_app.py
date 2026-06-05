@@ -47,5 +47,28 @@ def add_post():
         return jsonify({ 'error': f'Required field {str(e)} not set.' }), 400
 
 
+@app.route('/api/posts/<post_id>', methods=['DELETE'])
+def delete_post(post_id):
+    global POSTS
+    post_id = int(post_id)
+
+    try:
+        old_len = len(POSTS)
+        POSTS = [p for p in POSTS if p["id"] != post_id]
+        new_len = len(POSTS)
+
+        assert new_len == old_len - 1
+            
+        return jsonify({ 'message': f'Post with id {post_id} has been deleted successfully.'}), 200
+    
+    except AssertionError:
+        return jsonify({ 'error': 'Post not found.' }), 404
+
+    except ValueError:
+        return jsonify({ 'error': 'Invalid post id.'}), 400
+
+
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5002, debug=True)
